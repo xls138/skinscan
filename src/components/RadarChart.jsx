@@ -29,7 +29,8 @@ export function RadarChart({ data, size = 220, color = '#fb7185' }) {
 
   const points = useMemo(() => {
     return DIMENSIONS.map(({ key }, i) => {
-      const value = data?.[key] ?? 0;
+      const item = data?.[key];
+      const value = typeof item === 'object' ? item?.score : item ?? 0;
       const radius = (value / 100) * maxRadius;
       return polarToCartesian(center, center, radius, angles[i]);
     });
@@ -113,13 +114,25 @@ export function RadarChart({ data, size = 220, color = '#fb7185' }) {
         })}
       </svg>
 
-      <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm max-w-[280px]">
-        {DIMENSIONS.map(({ key, label }) => (
-          <div key={key} className="text-center min-w-[50px]">
-            <div className="text-lg font-light tabular-nums text-stone-800">{data?.[key] ?? 0}</div>
-            <div className="text-[9px] text-stone-400 uppercase tracking-wider">{label}</div>
-          </div>
-        ))}
+      <div className="flex flex-col gap-3 w-full max-w-[300px]">
+        {DIMENSIONS.map(({ key, label }) => {
+          const item = data?.[key];
+          const score = typeof item === 'object' ? item?.score : item ?? 0;
+          const insight = typeof item === 'object' ? item?.insight : null;
+          return (
+            <div key={key} className="flex items-baseline gap-3">
+              <div className="w-12 text-right">
+                <span className="text-lg font-light tabular-nums text-stone-800">{score}</span>
+              </div>
+              <div className="flex-1">
+                <span className="text-xs text-stone-500 font-medium">{label}</span>
+                {insight && (
+                  <p className="text-xs text-stone-400 mt-0.5 leading-relaxed">{insight}</p>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

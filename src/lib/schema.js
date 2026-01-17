@@ -389,12 +389,27 @@ export const SkinScanSchema = z.object({
     .describe('一句话评语，根据气质类型匹配风格'),
 
   radar: z.object({
-    youthfulness: z.number().min(0).max(100).describe('少女感/少年感'),
-    elegance: z.number().min(0).max(100).describe('高级感'),
-    vibe: z.number().min(0).max(100).describe('氛围感'),
-    affinity: z.number().min(0).max(100).describe('亲和力'),
-    uniqueness: z.number().min(0).max(100).describe('个性度')
-  }).describe('雷达图5维度总分'),
+    youthfulness: z.object({
+      score: z.number().min(0).max(100),
+      insight: z.string().max(30).describe('一句话解读')
+    }).describe('少女感/少年感'),
+    elegance: z.object({
+      score: z.number().min(0).max(100),
+      insight: z.string().max(30).describe('一句话解读')
+    }).describe('高级感'),
+    vibe: z.object({
+      score: z.number().min(0).max(100),
+      insight: z.string().max(30).describe('一句话解读')
+    }).describe('氛围感'),
+    affinity: z.object({
+      score: z.number().min(0).max(100),
+      insight: z.string().max(30).describe('一句话解读')
+    }).describe('亲和力'),
+    uniqueness: z.object({
+      score: z.number().min(0).max(100),
+      insight: z.string().max(30).describe('一句话解读')
+    }).describe('个性度')
+  }).describe('雷达图5维度，每个维度有分数和一句话解读'),
 
   radar_detail: z.object({
     youthfulness: MetricDetailSchema.extend({

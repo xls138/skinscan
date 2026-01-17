@@ -1,14 +1,10 @@
 import { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
-import { ImageUpload } from '@/components/ImageUpload';
+import { CameraCapture } from '@/components/CameraCapture';
 import { ShareCard } from '@/components/ShareCard';
 import { DetailedReport } from '@/components/DetailedReport';
 import { AnalysisLoading } from '@/components/AnalysisLoading';
 import { analyzeFace } from '@/lib/gemini';
-import { cn } from '@/lib/utils';
 
 function App() {
   const [imageFile, setImageFile] = useState(null);
@@ -18,21 +14,15 @@ function App() {
   const [error, setError] = useState(null);
   const [showPaid, setShowPaid] = useState(false);
 
-  const handleImageSelect = useCallback((file, url) => {
+  const handleCapture = useCallback(async (file, url) => {
     setImageFile(file);
     setImageUrl(url);
     setResult(null);
     setError(null);
-  }, []);
-
-  const handleAnalyze = useCallback(async () => {
-    if (!imageFile) return;
-
     setIsLoading(true);
-    setError(null);
 
     try {
-      const analysisResult = await analyzeFace(imageFile);
+      const analysisResult = await analyzeFace(file);
       setResult(analysisResult);
     } catch (err) {
       console.error('Analysis failed:', err);
@@ -40,7 +30,7 @@ function App() {
     } finally {
       setIsLoading(false);
     }
-  }, [imageFile]);
+  }, []);
 
   const handleReset = useCallback(() => {
     setImageFile(null);
@@ -69,26 +59,14 @@ function App() {
               <AnalysisLoading isLoading={isLoading} />
             ) : (
               <>
-                <ImageUpload
-                  onImageSelect={handleImageSelect}
+                <CameraCapture
+                  onCapture={handleCapture}
                   isLoading={isLoading}
                 />
 
                 {error && (
                   <div className="text-center text-red-500 text-sm bg-red-50 p-4 rounded-xl border border-red-100">
                     {error}
-                  </div>
-                )}
-
-                {imageFile && !isLoading && (
-                  <div className="flex justify-center pt-2">
-                    <Button
-                      onClick={handleAnalyze}
-                      size="lg"
-                      className="rounded-full bg-stone-900 text-white hover:bg-stone-800 px-10 shadow-lg shadow-stone-900/10 transition-transform active:scale-95"
-                    >
-                      开始测评
-                    </Button>
                   </div>
                 )}
               </>

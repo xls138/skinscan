@@ -109,12 +109,12 @@ const ANALYSIS_PROMPT = `你是一个专业的颜值气质分析师，为用户�
    - 甜美系/邻家系: 夸赞型（"笑起来像草莓味的夏天"）
    - 御姐系/个性系: 网感型（"姐的气场两米八，建议出道"）
 
-5. **雷达图5维度 (radar)**: 用于雷达图可视化的总分
-   - youthfulness: 少女感/少年感 0-100
-   - elegance: 高级感 0-100
-   - vibe: 氛围感 0-100
-   - affinity: 亲和力 0-100
-   - uniqueness: 个性度 0-100
+5. **雷达图5维度 (radar)**: 每个维度包含分数和一句话解读
+   - youthfulness: {score: 0-100, insight: "一句话解读，如'胶原蛋白满满'"}
+   - elegance: {score: 0-100, insight: "一句话解读，如'骨相清晰有高级感'"}
+   - vibe: {score: 0-100, insight: "一句话解读，如'眼神有故事'"}
+   - affinity: {score: 0-100, insight: "一句话解读，如'笑容很治愈'"}
+   - uniqueness: {score: 0-100, insight: "一句话解读，如'辨识度很高'"}
 
 6. **气质雷达详细分析 (radar_detail)**: 前3个核心维度的细项分析
 
@@ -262,11 +262,46 @@ const RESPONSE_SCHEMA = {
     radar: {
       type: 'object',
       properties: {
-        youthfulness: { type: 'integer', minimum: 0, maximum: 100 },
-        elegance: { type: 'integer', minimum: 0, maximum: 100 },
-        vibe: { type: 'integer', minimum: 0, maximum: 100 },
-        affinity: { type: 'integer', minimum: 0, maximum: 100 },
-        uniqueness: { type: 'integer', minimum: 0, maximum: 100 }
+        youthfulness: {
+          type: 'object',
+          properties: {
+            score: { type: 'integer', minimum: 0, maximum: 100 },
+            insight: { type: 'string' }
+          },
+          required: ['score', 'insight']
+        },
+        elegance: {
+          type: 'object',
+          properties: {
+            score: { type: 'integer', minimum: 0, maximum: 100 },
+            insight: { type: 'string' }
+          },
+          required: ['score', 'insight']
+        },
+        vibe: {
+          type: 'object',
+          properties: {
+            score: { type: 'integer', minimum: 0, maximum: 100 },
+            insight: { type: 'string' }
+          },
+          required: ['score', 'insight']
+        },
+        affinity: {
+          type: 'object',
+          properties: {
+            score: { type: 'integer', minimum: 0, maximum: 100 },
+            insight: { type: 'string' }
+          },
+          required: ['score', 'insight']
+        },
+        uniqueness: {
+          type: 'object',
+          properties: {
+            score: { type: 'integer', minimum: 0, maximum: 100 },
+            insight: { type: 'string' }
+          },
+          required: ['score', 'insight']
+        }
       },
       required: ['youthfulness', 'elegance', 'vibe', 'affinity', 'uniqueness']
     },
