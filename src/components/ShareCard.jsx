@@ -197,13 +197,21 @@ export function ShareCard({ result, imageUrl }) {
 
             {concernCount > 0 && (
               <div className="w-full mt-4 px-2">
-                <div className="bg-amber-50/80 border border-amber-200/50 rounded-lg px-4 py-3 text-center">
-                  <span className="text-amber-600 text-xs font-medium">
-                    ⚠️ 检测到 {concernCount} 项需关注
-                  </span>
-                  <span className="text-amber-500/70 text-[10px] block mt-1">
-                    解锁报告查看详情
-                  </span>
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/50 rounded-xl px-4 py-4 text-center space-y-2">
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-lg">⚠️</span>
+                    <span className="text-amber-700 font-medium">
+                      检测到 {concernCount} 项需关注
+                    </span>
+                  </div>
+                  <div className="flex justify-center gap-2">
+                    {concerns.map((_, i) => (
+                      <div key={i} className="w-8 h-1.5 rounded-full bg-amber-300/50" />
+                    ))}
+                  </div>
+                  <p className="text-amber-600/70 text-xs">
+                    解锁完整报告查看详情与改善建议
+                  </p>
                 </div>
               </div>
             )}
