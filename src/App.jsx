@@ -5,6 +5,7 @@ import { CameraCapture } from '@/components/CameraCapture';
 import { ShareCard } from '@/components/ShareCard';
 import { DetailedReport } from '@/components/DetailedReport';
 import { AnalysisLoading } from '@/components/AnalysisLoading';
+import { FaceAnalysisOverlay } from '@/components/FaceAnalysisOverlay';
 import { analyzeFace } from '@/lib/gemini';
 
 function App() {
@@ -213,7 +214,10 @@ function App() {
         )}
 
         {isLoading ? (
-          <AnalysisLoading isLoading={isLoading} />
+          <div className="space-y-6 animate-in fade-in duration-300">
+            <FaceAnalysisOverlay imageUrl={imageUrl} />
+            <AnalysisLoading isLoading={isLoading} />
+          </div>
         ) : result ? (
           renderResult()
         ) : mode === 'camera' ? (
