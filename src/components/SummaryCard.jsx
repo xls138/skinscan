@@ -98,13 +98,13 @@ export function getHighlightTags(radar, count = 4) {
 function getTagStyle(level) {
   switch (level) {
     case 'high':
-      return 'bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-700 border-amber-200/50';
+      return 'bg-amber-100 text-amber-700 border-amber-200';
     case 'medium':
-      return 'bg-blue-50 text-blue-600 border-blue-200/50';
+      return 'bg-blue-50 text-blue-600 border-blue-200';
     case 'low':
-      return 'bg-stone-100 text-stone-500 border-stone-200/50';
+      return 'bg-stone-100 text-stone-500 border-stone-200';
     default:
-      return 'bg-stone-100 text-stone-600 border-stone-200/50';
+      return 'bg-stone-100 text-stone-600 border-stone-200';
   }
 }
 
@@ -130,7 +130,7 @@ export function SummaryCard({ result, imageUrl, theme }) {
           className="w-full h-full object-cover"
         />
         {/* Gradient overlay at bottom */}
-        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white/90 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-white/90" />
       </div>
 
       {/* Content Section - 45% */}

@@ -28,22 +28,22 @@ const DIMENSIONS = [
 function getTagStyle(level) {
   switch (level) {
     case 'high':
-      return 'bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-700 border-amber-200/50';
+      return 'bg-amber-100 text-amber-700 border-amber-200';
     case 'medium':
-      return 'bg-blue-50 text-blue-600 border-blue-200/50';
+      return 'bg-blue-50 text-blue-600 border-blue-200';
     case 'low':
-      return 'bg-stone-100 text-stone-500 border-stone-200/50';
+      return 'bg-stone-100 text-stone-500 border-stone-200';
     default:
-      return 'bg-stone-100 text-stone-600 border-stone-200/50';
+      return 'bg-stone-100 text-stone-600 border-stone-200';
   }
 }
 
 function getBarColor(level) {
   switch (level) {
     case 'high':
-      return 'bg-gradient-to-r from-amber-400 to-yellow-400';
+      return 'bg-amber-400';
     case 'medium':
-      return 'bg-gradient-to-r from-blue-400 to-blue-300';
+      return 'bg-blue-400';
     case 'low':
       return 'bg-stone-300';
     default:
@@ -65,10 +65,10 @@ function DimensionRow({ dimensionKey, data, gender = 'female' }) {
   const label = gender === 'male' && config.labelMale ? config.labelMale : config.label;
 
   return (
-    <div className="bg-white/80 backdrop-blur-sm rounded-xl p-3 shadow-sm border border-stone-100/50 hover:shadow-md transition-all duration-300 group">
+    <div className="bg-white rounded-xl p-3 shadow-sm border border-stone-100 hover:shadow-md transition-shadow group">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <span className="text-lg bg-stone-50 w-8 h-8 rounded-full flex items-center justify-center border border-stone-100 shadow-sm group-hover:scale-110 transition-transform duration-300">
+          <span className="text-lg bg-stone-50 size-8 rounded-full flex items-center justify-center border border-stone-100 shadow-sm">
             {config.icon}
           </span>
           <span className="text-sm font-medium text-stone-700">{label}</span>

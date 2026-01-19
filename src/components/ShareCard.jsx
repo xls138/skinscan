@@ -147,7 +147,7 @@ function DotIndicator({ count, activeIndex, onDotClick }) {
           key={i}
           onClick={() => onDotClick(i)}
           className={cn(
-            "w-2 h-2 rounded-full transition-all duration-300",
+            "size-2 rounded-full transition-all",
             i === activeIndex 
               ? "bg-stone-800 w-4" 
               : "bg-stone-300 hover:bg-stone-400"
@@ -220,9 +220,9 @@ export function ShareCard({ result, imageUrl, onReset }) {
             onClick={onReset}
             variant="ghost"
             size="icon"
-            className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-stone-100/80 hover:bg-stone-200 text-stone-500 hover:text-stone-700"
+            className="absolute top-4 right-4 z-20 size-10 rounded-full bg-stone-100/80 hover:bg-stone-200 text-stone-500 hover:text-stone-700"
           >
-            <RotateCcw className="w-5 h-5" />
+            <RotateCcw className="size-5" />
           </Button>
         )}
         
@@ -255,9 +255,9 @@ export function ShareCard({ result, imageUrl, onReset }) {
           onClick={onReset}
           variant="ghost"
           size="icon"
-          className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-white/80 hover:bg-white text-stone-500 hover:text-stone-700 shadow-sm"
+          className="absolute top-4 right-4 z-20 size-10 rounded-full bg-white/80 hover:bg-white text-stone-500 hover:text-stone-700 shadow-sm"
         >
-          <RotateCcw className="w-5 h-5" />
+          <RotateCcw className="size-5" />
         </Button>
       )}
       
