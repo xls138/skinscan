@@ -10,7 +10,8 @@ import { CameraCapture } from "@/components/CameraCapture";
 import { ShareCard } from "@/components/ShareCard";
 import { AnalysisLoading } from "@/components/AnalysisLoading";
 import { FaceAnalysisOverlay } from "@/components/FaceAnalysisOverlay";
-import { analyzeFace } from "@/lib/gemini";
+// import { analyzeFace } from "@/lib/gemini";
+import { analyzeFaceServer } from "@/lib/gemini";
 
 function App() {
   const [mode, setMode] = useState(null);
@@ -27,7 +28,7 @@ function App() {
     setIsLoading(true);
 
     try {
-      const analysisResult = await analyzeFace(file);
+      const analysisResult = await analyzeFaceServer(file);
       setResult(analysisResult);
     } catch (err) {
       console.error("Analysis failed:", err);
