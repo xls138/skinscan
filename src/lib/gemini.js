@@ -5,23 +5,28 @@
  * [PROTOCOL]: Update this header on changes, then check AGENTS.md
  */
 
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import { SkinScanSchema, AURA_TYPES, FEMALE_AURA_TYPES, MALE_AURA_TYPES } from './schema';
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import {
+  SkinScanSchema,
+  AURA_TYPES,
+  FEMALE_AURA_TYPES,
+  MALE_AURA_TYPES,
+} from "./schema";
 
 // ============================================================================
 // CONFIGURATION
 // ============================================================================
 
-const DEFAULT_BASE_URL = 'https://generativelanguage.googleapis.com';
+const DEFAULT_BASE_URL = "https://generativelanguage.googleapis.com";
 
 /**
  * Get configuration from environment or defaults
  */
 function getConfig() {
   return {
-    apiKey: import.meta.env.VITE_GEMINI_API_KEY || '',
+    apiKey: import.meta.env.VITE_GEMINI_API_KEY || "",
     baseUrl: import.meta.env.VITE_GEMINI_BASE_URL || DEFAULT_BASE_URL,
-    model: import.meta.env.VITE_GEMINI_MODEL || 'gemini-2.5-flash-lite'
+    model: import.meta.env.VITE_GEMINI_MODEL || "gemini-2.5-flash-lite",
   };
 }
 
@@ -226,45 +231,80 @@ const ANALYSIS_PROMPT = `你是一个专业的颜值气质分析师，为用户�
 // ============================================================================
 
 const AFFINITY_CONFIG = {
-  subItems: ['warmth', 'approachability', 'smile', 'openness'],
-  labels: { warmth: '温暖度', approachability: '亲近感', smile: '笑容', openness: '开放度' },
-  diagnosisTemplates: ['笑容亲切自然，给人温暖舒适的感觉', '亲和力强，容易让人产生好感', '自然大方，让人感觉很舒服'],
-  suggestionTemplates: ['保持自然微笑，增强亲和力', '多展现真诚的一面', '继续保持亲切的态度']
+  subItems: ["warmth", "approachability", "smile", "openness"],
+  labels: {
+    warmth: "温暖度",
+    approachability: "亲近感",
+    smile: "笑容",
+    openness: "开放度",
+  },
+  diagnosisTemplates: [
+    "笑容亲切自然，给人温暖舒适的感觉",
+    "亲和力强，容易让人产生好感",
+    "自然大方，让人感觉很舒服",
+  ],
+  suggestionTemplates: [
+    "保持自然微笑，增强亲和力",
+    "多展现真诚的一面",
+    "继续保持亲切的态度",
+  ],
 };
 
 const UNIQUENESS_CONFIG = {
-  subItems: ['distinctiveness', 'style', 'creativity', 'edge'],
-  labels: { distinctiveness: '辨识度', style: '风格', creativity: '创意', edge: '锐度' },
-  diagnosisTemplates: ['五官辨识度高，个人风格明显', '独特的气质让人印象深刻', '具有鲜明的个人特色'],
-  suggestionTemplates: ['可以尝试更独特的穿搭风格', '发挥个人特色，打造专属风格', '保持独特气质，不必随波逐流']
+  subItems: ["distinctiveness", "style", "creativity", "edge"],
+  labels: {
+    distinctiveness: "辨识度",
+    style: "风格",
+    creativity: "创意",
+    edge: "锐度",
+  },
+  diagnosisTemplates: [
+    "五官辨识度高，个人风格明显",
+    "独特的气质让人印象深刻",
+    "具有鲜明的个人特色",
+  ],
+  suggestionTemplates: [
+    "可以尝试更独特的穿搭风格",
+    "发挥个人特色，打造专属风格",
+    "保持独特气质，不必随波逐流",
+  ],
 };
 
 function getLevel(score) {
-  if (score >= 85) return '优秀';
-  if (score >= 70) return '良好';
-  if (score >= 55) return '一般';
-  return '需改善';
+  if (score >= 85) return "优秀";
+  if (score >= 70) return "良好";
+  if (score >= 55) return "一般";
+  return "需改善";
 }
 
 function generateDetailFromRadar(radarItem, type) {
   if (!radarItem) return null;
-  
-  const config = type === 'affinity' ? AFFINITY_CONFIG : UNIQUENESS_CONFIG;
+
+  const config = type === "affinity" ? AFFINITY_CONFIG : UNIQUENESS_CONFIG;
   const baseScore = radarItem.score;
   const variance = () => Math.floor(Math.random() * 10) - 5;
-  
+
   const subItems = {};
-  config.subItems.forEach(key => {
+  config.subItems.forEach((key) => {
     const itemScore = Math.max(0, Math.min(100, baseScore + variance()));
     subItems[key] = { score: itemScore, level: getLevel(itemScore) };
   });
-  
+
   return {
     score: baseScore,
-    percentile: Math.max(50, Math.min(99, baseScore - 5 + Math.floor(Math.random() * 10))),
+    percentile: Math.max(
+      50,
+      Math.min(99, baseScore - 5 + Math.floor(Math.random() * 10)),
+    ),
     sub_items: subItems,
-    diagnosis: config.diagnosisTemplates[Math.floor(Math.random() * config.diagnosisTemplates.length)],
-    suggestion: config.suggestionTemplates[Math.floor(Math.random() * config.suggestionTemplates.length)]
+    diagnosis:
+      config.diagnosisTemplates[
+        Math.floor(Math.random() * config.diagnosisTemplates.length)
+      ],
+    suggestion:
+      config.suggestionTemplates[
+        Math.floor(Math.random() * config.suggestionTemplates.length)
+      ],
   };
 }
 
@@ -272,133 +312,178 @@ function generateDetailFromRadar(radarItem, type) {
 // JSON SCHEMA FOR GEMINI
 // ============================================================================
 
-const ALL_AURA_TYPES = [...Object.keys(FEMALE_AURA_TYPES), ...Object.keys(MALE_AURA_TYPES)];
+const ALL_AURA_TYPES = [
+  ...Object.keys(FEMALE_AURA_TYPES),
+  ...Object.keys(MALE_AURA_TYPES),
+];
 
 const SUB_ITEM_SCHEMA = {
-  type: 'object',
+  type: "object",
   properties: {
-    score: { type: 'integer', minimum: 0, maximum: 100 },
-    level: { type: 'string', enum: ['优秀', '良好', '一般', '需改善'] }
+    score: { type: "integer", minimum: 0, maximum: 100 },
+    level: { type: "string", enum: ["优秀", "良好", "一般", "需改善"] },
   },
-  required: ['score', 'level']
+  required: ["score", "level"],
 };
 
 const METRIC_DETAIL_SCHEMA = (subItemNames) => ({
-  type: 'object',
+  type: "object",
   properties: {
-    score: { type: 'integer', minimum: 0, maximum: 100 },
-    percentile: { type: 'integer', minimum: 0, maximum: 100 },
+    score: { type: "integer", minimum: 0, maximum: 100 },
+    percentile: { type: "integer", minimum: 0, maximum: 100 },
     sub_items: {
-      type: 'object',
-      properties: Object.fromEntries(subItemNames.map(name => [name, SUB_ITEM_SCHEMA])),
-      required: subItemNames
+      type: "object",
+      properties: Object.fromEntries(
+        subItemNames.map((name) => [name, SUB_ITEM_SCHEMA]),
+      ),
+      required: subItemNames,
     },
-    diagnosis: { type: 'string' },
-    suggestion: { type: 'string' }
+    diagnosis: { type: "string" },
+    suggestion: { type: "string" },
   },
-  required: ['score', 'percentile', 'sub_items', 'diagnosis', 'suggestion']
+  required: ["score", "percentile", "sub_items", "diagnosis", "suggestion"],
 });
 
 const RESPONSE_SCHEMA = {
-  type: 'object',
+  type: "object",
   properties: {
     gender: {
-      type: 'string',
-      enum: ['female', 'male'],
-      description: '性别'
+      type: "string",
+      enum: ["female", "male"],
+      description: "性别",
     },
     aura_type: {
-      type: 'string',
+      type: "string",
       enum: ALL_AURA_TYPES,
-      description: '气质类型'
+      description: "气质类型",
     },
     predicted_age: {
-      type: 'integer',
+      type: "integer",
       minimum: 15,
       maximum: 60,
-      description: 'AI预测年龄'
+      description: "AI预测年龄",
     },
     beauty_score: {
-      type: 'integer',
+      type: "integer",
       minimum: 0,
       maximum: 100,
-      description: '颜值评分'
+      description: "颜值评分",
     },
     tagline: {
-      type: 'string',
-      description: '一句话评语'
+      type: "string",
+      description: "一句话评语",
     },
     radar: {
-      type: 'object',
+      type: "object",
       properties: {
         youthfulness: {
-          type: 'object',
+          type: "object",
           properties: {
-            score: { type: 'integer', minimum: 0, maximum: 100 },
-            insight: { type: 'string' }
+            score: { type: "integer", minimum: 0, maximum: 100 },
+            insight: { type: "string" },
           },
-          required: ['score', 'insight']
+          required: ["score", "insight"],
         },
         elegance: {
-          type: 'object',
+          type: "object",
           properties: {
-            score: { type: 'integer', minimum: 0, maximum: 100 },
-            insight: { type: 'string' }
+            score: { type: "integer", minimum: 0, maximum: 100 },
+            insight: { type: "string" },
           },
-          required: ['score', 'insight']
+          required: ["score", "insight"],
         },
         vibe: {
-          type: 'object',
+          type: "object",
           properties: {
-            score: { type: 'integer', minimum: 0, maximum: 100 },
-            insight: { type: 'string' }
+            score: { type: "integer", minimum: 0, maximum: 100 },
+            insight: { type: "string" },
           },
-          required: ['score', 'insight']
+          required: ["score", "insight"],
         },
         affinity: {
-          type: 'object',
+          type: "object",
           properties: {
-            score: { type: 'integer', minimum: 0, maximum: 100 },
-            insight: { type: 'string' }
+            score: { type: "integer", minimum: 0, maximum: 100 },
+            insight: { type: "string" },
           },
-          required: ['score', 'insight']
+          required: ["score", "insight"],
         },
         uniqueness: {
-          type: 'object',
+          type: "object",
           properties: {
-            score: { type: 'integer', minimum: 0, maximum: 100 },
-            insight: { type: 'string' }
+            score: { type: "integer", minimum: 0, maximum: 100 },
+            insight: { type: "string" },
           },
-          required: ['score', 'insight']
-        }
+          required: ["score", "insight"],
+        },
       },
-      required: ['youthfulness', 'elegance', 'vibe', 'affinity', 'uniqueness']
+      required: ["youthfulness", "elegance", "vibe", "affinity", "uniqueness"],
     },
     radar_detail: {
-      type: 'object',
+      type: "object",
       properties: {
-        youthfulness: METRIC_DETAIL_SCHEMA(['collagen', 'apple_cheeks', 'plumpness', 'skin_texture']),
-        elegance: METRIC_DETAIL_SCHEMA(['bone_structure', 'contour', 'proportions', 'refinement']),
-        vibe: METRIC_DETAIL_SCHEMA(['eye_expression', 'demeanor', 'aura', 'charisma'])
+        youthfulness: METRIC_DETAIL_SCHEMA([
+          "collagen",
+          "apple_cheeks",
+          "plumpness",
+          "skin_texture",
+        ]),
+        elegance: METRIC_DETAIL_SCHEMA([
+          "bone_structure",
+          "contour",
+          "proportions",
+          "refinement",
+        ]),
+        vibe: METRIC_DETAIL_SCHEMA([
+          "eye_expression",
+          "demeanor",
+          "aura",
+          "charisma",
+        ]),
       },
-      required: ['youthfulness', 'elegance', 'vibe']
+      required: ["youthfulness", "elegance", "vibe"],
     },
     metrics_detail: {
-      type: 'object',
+      type: "object",
       properties: {
-        skin_quality: METRIC_DETAIL_SCHEMA(['luminosity', 'smoothness', 'evenness', 'pores']),
-        anti_aging: METRIC_DETAIL_SCHEMA(['nasolabial', 'eye_area', 'firmness', 'elasticity']),
-        vitality: METRIC_DETAIL_SCHEMA(['complexion', 'dark_circles', 'fatigue', 'hydration'])
+        skin_quality: METRIC_DETAIL_SCHEMA([
+          "luminosity",
+          "smoothness",
+          "evenness",
+          "pores",
+        ]),
+        anti_aging: METRIC_DETAIL_SCHEMA([
+          "nasolabial",
+          "eye_area",
+          "firmness",
+          "elasticity",
+        ]),
+        vitality: METRIC_DETAIL_SCHEMA([
+          "complexion",
+          "dark_circles",
+          "fatigue",
+          "hydration",
+        ]),
       },
-      required: ['skin_quality', 'anti_aging', 'vitality']
+      required: ["skin_quality", "anti_aging", "vitality"],
     },
     concerns: {
-      type: 'array',
-      items: { type: 'string' },
-      maxItems: 3
-    }
+      type: "array",
+      items: { type: "string" },
+      maxItems: 3,
+    },
   },
-  required: ['gender', 'aura_type', 'predicted_age', 'beauty_score', 'tagline', 'radar', 'radar_detail', 'metrics_detail', 'concerns']
+  required: [
+    "gender",
+    "aura_type",
+    "predicted_age",
+    "beauty_score",
+    "tagline",
+    "radar",
+    "radar_detail",
+    "metrics_detail",
+    "concerns",
+  ],
 };
 
 // ============================================================================
@@ -408,13 +493,15 @@ const RESPONSE_SCHEMA = {
 class GeminiClient {
   constructor(options = {}) {
     const config = getConfig();
-    
+
     this.apiKey = options.apiKey || config.apiKey;
     this.baseUrl = options.baseUrl || config.baseUrl;
     this.modelName = options.model || config.model;
-    
+
     if (!this.apiKey) {
-      console.warn('Gemini API key not configured. Set VITE_GEMINI_API_KEY in .env');
+      console.warn(
+        "Gemini API key not configured. Set VITE_GEMINI_API_KEY in .env",
+      );
     }
 
     // Initialize client with custom base URL if provided
@@ -422,14 +509,14 @@ class GeminiClient {
     if (this.baseUrl && this.baseUrl !== DEFAULT_BASE_URL) {
       clientOptions.baseUrl = this.baseUrl;
     }
-    
+
     this.client = new GoogleGenerativeAI(this.apiKey, clientOptions);
     this.model = this.client.getGenerativeModel({
       model: this.modelName,
       generationConfig: {
-        responseMimeType: 'application/json',
-        responseSchema: RESPONSE_SCHEMA
-      }
+        responseMimeType: "application/json",
+        responseSchema: RESPONSE_SCHEMA,
+      },
     });
   }
 
@@ -442,10 +529,10 @@ class GeminiClient {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => {
-        const base64 = reader.result.split(',')[1];
+        const base64 = reader.result.split(",")[1];
         resolve({
           data: base64,
-          mimeType: file.type
+          mimeType: file.type,
         });
       };
       reader.onerror = reject;
@@ -460,53 +547,56 @@ class GeminiClient {
    */
   async analyzeFace(imageFile) {
     if (!this.apiKey) {
-      throw new Error('Gemini API key not configured');
+      throw new Error("Gemini API key not configured");
     }
 
     const imageData = await this.fileToBase64(imageFile);
-    
+
     const result = await this.model.generateContent([
       ANALYSIS_PROMPT,
       {
         inlineData: {
           data: imageData.data,
-          mimeType: imageData.mimeType
-        }
-      }
+          mimeType: imageData.mimeType,
+        },
+      },
     ]);
 
     const response = result.response;
     const text = response.text();
-    
+
     // Parse and validate response
     let parsed;
     try {
       parsed = JSON.parse(text);
-    } catch (e) {
+    } catch {
       // Try to extract JSON from markdown code block
       const match = text.match(/```json\s*([\s\S]*?)\s*```/);
       if (match) {
         parsed = JSON.parse(match[1]);
       } else {
-        throw new Error('Failed to parse Gemini response as JSON');
+        throw new Error("Failed to parse Gemini response as JSON");
       }
     }
 
     // Validate with Zod schema
     const validated = SkinScanSchema.parse(parsed);
-    
+
     // Generate affinity and uniqueness radar_detail from radar scores
     const enrichedRadarDetail = {
       ...validated.radar_detail,
-      affinity: generateDetailFromRadar(validated.radar.affinity, 'affinity'),
-      uniqueness: generateDetailFromRadar(validated.radar.uniqueness, 'uniqueness')
+      affinity: generateDetailFromRadar(validated.radar.affinity, "affinity"),
+      uniqueness: generateDetailFromRadar(
+        validated.radar.uniqueness,
+        "uniqueness",
+      ),
     };
-    
+
     // Add aura label from AURA_TYPES
     return {
       ...validated,
       radar_detail: enrichedRadarDetail,
-      aura_label: AURA_TYPES[validated.aura_type]?.label || validated.aura_type
+      aura_label: AURA_TYPES[validated.aura_type]?.label || validated.aura_type,
     };
   }
 }

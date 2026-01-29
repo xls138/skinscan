@@ -4,25 +4,25 @@
  * [POS]: components/SkinCard, 3卡片滑动的第三张, 肤质+付费入口
  * [PROTOCOL]: 变更时更新此头部，然后检查 AGENTS.md
  */
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { Lock, ChevronRight, Check, Gift } from 'lucide-react';
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { Lock, ChevronRight, Check, Gift } from "lucide-react";
 
 // ============================================================================
 // METRIC CONFIG
 // ============================================================================
 
 const METRICS = [
-  { key: 'skin_quality', label: '肤质状态', icon: '✨', color: 'amber' },
-  { key: 'anti_aging', label: '抗老指数', icon: '💧', color: 'sky' },
-  { key: 'vitality', label: '元气值', icon: '🌿', color: 'emerald' }
+  { key: "skin_quality", label: "肤质状态", icon: "✨", color: "amber" },
+  { key: "anti_aging", label: "抗老指数", icon: "💧", color: "sky" },
+  { key: "vitality", label: "元气值", icon: "🌿", color: "emerald" },
 ];
 
 const COLOR_VARIANTS = {
-  amber: 'bg-amber-500',
-  sky: 'bg-sky-500',
-  emerald: 'bg-emerald-500'
+  amber: "bg-amber-500",
+  sky: "bg-sky-500",
+  emerald: "bg-emerald-500",
 };
 
 // ============================================================================
@@ -30,37 +30,48 @@ const COLOR_VARIANTS = {
 // ============================================================================
 
 function MetricRow({ metricKey, data }) {
-  const config = METRICS.find(m => m.key === metricKey);
+  const config = METRICS.find((m) => m.key === metricKey);
   if (!config || !data) return null;
 
   const score = data?.score ?? 0;
   const barColor = COLOR_VARIANTS[config.color];
-  
+
   const headerColors = {
-    amber: 'bg-amber-50 text-amber-700 border-amber-100',
-    sky: 'bg-sky-50 text-sky-700 border-sky-100',
-    emerald: 'bg-emerald-50 text-emerald-700 border-emerald-100'
+    amber: "bg-amber-50 text-amber-700 border-amber-100",
+    sky: "bg-sky-50 text-sky-700 border-sky-100",
+    emerald: "bg-emerald-50 text-emerald-700 border-emerald-100",
   };
 
-  const headerStyle = headerColors[config.color] || 'bg-stone-50 text-stone-700 border-stone-100';
+  const headerStyle =
+    headerColors[config.color] || "bg-stone-50 text-stone-700 border-stone-100";
 
   return (
     <div className="bg-white rounded-xl p-3 border border-stone-100 shadow-sm hover:shadow-md transition-all duration-300">
       <div className="flex items-center justify-between mb-2.5">
         <div className="flex items-center gap-2">
-          <div className={cn("size-8 rounded-lg flex items-center justify-center text-lg border", headerStyle)}>
+          <div
+            className={cn(
+              "size-8 rounded-lg flex items-center justify-center text-lg border",
+              headerStyle,
+            )}
+          >
             {config.icon}
           </div>
-          <span className="text-sm font-medium text-stone-700">{config.label}</span>
+          <span className="text-sm font-medium text-stone-700">
+            {config.label}
+          </span>
         </div>
         <span className="text-lg font-bold text-stone-800 tabular-nums">
           {score}
         </span>
       </div>
-      
+
       <div className="h-2 bg-stone-100 rounded-full overflow-hidden">
-        <div 
-          className={cn("h-full rounded-full transition-all duration-1000 ease-out", barColor)}
+        <div
+          className={cn(
+            "h-full rounded-full transition-all duration-1000 ease-out",
+            barColor,
+          )}
           style={{ width: `${score}%` }}
         />
       </div>
@@ -89,11 +100,7 @@ export function SkinCard({ result, onUnlock }) {
 
         <div className="w-full bg-white rounded-xl p-4 border border-stone-100 space-y-3">
           {METRICS.map(({ key }) => (
-            <MetricRow 
-              key={key} 
-              metricKey={key} 
-              data={metrics_detail?.[key]} 
-            />
+            <MetricRow key={key} metricKey={key} data={metrics_detail?.[key]} />
           ))}
         </div>
 
@@ -120,13 +127,13 @@ export function SkinCard({ result, onUnlock }) {
 
         <div className="bg-stone-800 rounded-2xl p-4 text-white relative overflow-hidden">
           <div className="absolute top-0 right-0 size-32 bg-amber-400/10 rounded-full -translate-y-8 translate-x-8" />
-          
+
           <div className="relative z-10">
             <div className="flex items-center gap-2 mb-3">
               <Lock className="size-4 text-amber-400" />
               <span className="font-medium">获取专属护肤方案</span>
             </div>
-            
+
             <div className="space-y-2 mb-4 text-sm">
               <div className="flex items-center gap-2 text-stone-300">
                 <Check className="size-3.5 text-emerald-400" />
@@ -141,7 +148,7 @@ export function SkinCard({ result, onUnlock }) {
                 <span className="font-medium">商家 ¥50 优惠券</span>
               </div>
             </div>
-            
+
             <Button
               onClick={onUnlock}
               className="w-full h-11 rounded-xl bg-amber-400 text-stone-900 hover:bg-amber-300 font-medium group"
@@ -154,7 +161,9 @@ export function SkinCard({ result, onUnlock }) {
 
         <div className="flex items-center justify-center gap-2 opacity-40">
           <div className="h-px w-8 bg-current" />
-          <span className="text-[10px] tracking-[0.2em] font-light uppercase">SkinScan AI</span>
+          <span className="text-[10px] tracking-[0.2em] font-light uppercase">
+            SkinScan AI
+          </span>
           <div className="h-px w-8 bg-current" />
         </div>
       </div>

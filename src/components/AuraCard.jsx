@@ -4,21 +4,21 @@
  * [POS]: components/AuraCard, 3卡片滑动的第二张, 气质详细解读
  * [PROTOCOL]: 变更时更新此头部，然后检查 AGENTS.md
  */
-import { Badge } from '@/components/ui/badge';
-import { RadarChart } from '@/components/RadarChart';
-import { getScoreTag } from '@/components/SummaryCard';
-import { cn } from '@/lib/utils';
+import { Badge } from "@/components/ui/badge";
+import { RadarChart } from "@/components/RadarChart";
+import { getScoreTag } from "@/lib/scoreTags";
+import { cn } from "@/lib/utils";
 
 // ============================================================================
 // DIMENSION CONFIG
 // ============================================================================
 
 const DIMENSIONS = [
-  { key: 'youthfulness', label: '少女感', labelMale: '少年感', icon: '🌸' },
-  { key: 'elegance', label: '高级感', icon: '✨' },
-  { key: 'vibe', label: '氛围感', icon: '💫' },
-  { key: 'affinity', label: '亲和力', icon: '🤝' },
-  { key: 'uniqueness', label: '个性度', icon: '🎭' }
+  { key: "youthfulness", label: "少女感", labelMale: "少年感", icon: "🌸" },
+  { key: "elegance", label: "高级感", icon: "✨" },
+  { key: "vibe", label: "氛围感", icon: "💫" },
+  { key: "affinity", label: "亲和力", icon: "🤝" },
+  { key: "uniqueness", label: "个性度", icon: "🎭" },
 ];
 
 // ============================================================================
@@ -27,27 +27,27 @@ const DIMENSIONS = [
 
 function getTagStyle(level) {
   switch (level) {
-    case 'high':
-      return 'bg-amber-100 text-amber-700 border-amber-200';
-    case 'medium':
-      return 'bg-blue-50 text-blue-600 border-blue-200';
-    case 'low':
-      return 'bg-stone-100 text-stone-500 border-stone-200';
+    case "high":
+      return "bg-amber-100 text-amber-700 border-amber-200";
+    case "medium":
+      return "bg-blue-50 text-blue-600 border-blue-200";
+    case "low":
+      return "bg-stone-100 text-stone-500 border-stone-200";
     default:
-      return 'bg-stone-100 text-stone-600 border-stone-200';
+      return "bg-stone-100 text-stone-600 border-stone-200";
   }
 }
 
 function getBarColor(level) {
   switch (level) {
-    case 'high':
-      return 'bg-amber-400';
-    case 'medium':
-      return 'bg-blue-400';
-    case 'low':
-      return 'bg-stone-300';
+    case "high":
+      return "bg-amber-400";
+    case "medium":
+      return "bg-blue-400";
+    case "low":
+      return "bg-stone-300";
     default:
-      return 'bg-stone-300';
+      return "bg-stone-300";
   }
 }
 
@@ -55,14 +55,15 @@ function getBarColor(level) {
 // DIMENSION ROW COMPONENT
 // ============================================================================
 
-function DimensionRow({ dimensionKey, data, gender = 'female' }) {
-  const config = DIMENSIONS.find(d => d.key === dimensionKey);
+function DimensionRow({ dimensionKey, data, gender = "female" }) {
+  const config = DIMENSIONS.find((d) => d.key === dimensionKey);
   if (!config || !data) return null;
-  
-  const item = typeof data === 'object' ? data : { score: data };
+
+  const item = typeof data === "object" ? data : { score: data };
   const score = item?.score ?? 0;
   const tag = getScoreTag(dimensionKey, score);
-  const label = gender === 'male' && config.labelMale ? config.labelMale : config.label;
+  const label =
+    gender === "male" && config.labelMale ? config.labelMale : config.label;
 
   return (
     <div className="bg-white rounded-xl p-3 shadow-sm border border-stone-100 hover:shadow-md transition-shadow group">
@@ -81,17 +82,20 @@ function DimensionRow({ dimensionKey, data, gender = 'female' }) {
             variant="outline"
             className={cn(
               "px-2 py-0.5 text-[10px] font-medium rounded-full border shadow-none",
-              getTagStyle(tag.level)
+              getTagStyle(tag.level),
             )}
           >
             {tag.text}
           </Badge>
         </div>
       </div>
-      
+
       <div className="h-2 bg-stone-100 rounded-full overflow-hidden">
-        <div 
-          className={cn("h-full rounded-full transition-all duration-1000 ease-out", getBarColor(tag.level))}
+        <div
+          className={cn(
+            "h-full rounded-full transition-all duration-1000 ease-out",
+            getBarColor(tag.level),
+          )}
           style={{ width: `${score}%` }}
         />
       </div>
@@ -108,11 +112,14 @@ export function AuraCard({ result }) {
 
   const { radar, gender } = result;
 
-  const insightText = [
-    radar?.youthfulness?.insight,
-    radar?.elegance?.insight,
-    radar?.vibe?.insight
-  ].filter(Boolean).join('，') || '综合气质优秀，各维度表现均衡。';
+  const insightText =
+    [
+      radar?.youthfulness?.insight,
+      radar?.elegance?.insight,
+      radar?.vibe?.insight,
+    ]
+      .filter(Boolean)
+      .join("，") || "综合气质优秀，各维度表现均衡。";
 
   return (
     <div className="h-full w-full flex flex-col overflow-y-auto">
@@ -125,15 +132,17 @@ export function AuraCard({ result }) {
           </h2>
         </div>
 
-        <RadarChart data={radar} size={160} showDetails={false} />
+        <div className="pt-3">
+          <RadarChart data={radar} size={160} showDetails={false} />
+        </div>
 
         <div className="w-full space-y-2.5 px-1">
           {DIMENSIONS.map(({ key }) => (
-            <DimensionRow 
-              key={key} 
-              dimensionKey={key} 
-              data={radar?.[key]} 
-              gender={gender} 
+            <DimensionRow
+              key={key}
+              dimensionKey={key}
+              data={radar?.[key]}
+              gender={gender}
             />
           ))}
         </div>
@@ -145,7 +154,9 @@ export function AuraCard({ result }) {
         </div>
 
         <div className="flex items-center justify-center gap-2 opacity-40 pt-2">
-          <span className="text-[10px] tracking-wide">← 滑动查看肤质分析 →</span>
+          <span className="text-[10px] tracking-wide">
+            ← 滑动查看肤质分析 →
+          </span>
         </div>
       </div>
     </div>
