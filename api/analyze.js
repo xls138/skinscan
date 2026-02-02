@@ -1,102 +1,184 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from "@google/genai";
 
-const DEFAULT_BASE_URL = 'https://generativelanguage.googleapis.com';
+const DEFAULT_BASE_URL = "https://generativelanguage.googleapis.com";
 
 const ALL_AURA_TYPES = [
-  'cool_goddess', 'ice_queen', 'sweet_first_love', 'cute_baby', 'sunny_girl',
-  'queen_elegant', 'boss_lady', 'mature_charm', 'pure_desire', 'melancholy',
-  'mysterious', 'girl_next_door', 'gentle_beauty', 'retro_classic', 'edgy_cool',
-  'exotic_beauty', 'cold_prince', 'warm_sunshine', 'gentle_scholar', 'mature_elite',
-  'bad_boy', 'artistic_soul', 'sporty_fresh', 'korean_idol', 'japanese_soft',
-  'tough_guy', 'retro_hong_kong', 'mysterious_wolf', 'puppy_boy', 'gentleman',
-  'mixed_exotic', 'neighbor_brother'
+  "cool_goddess",
+  "ice_queen",
+  "sweet_first_love",
+  "cute_baby",
+  "sunny_girl",
+  "queen_elegant",
+  "boss_lady",
+  "mature_charm",
+  "pure_desire",
+  "melancholy",
+  "mysterious",
+  "girl_next_door",
+  "gentle_beauty",
+  "retro_classic",
+  "edgy_cool",
+  "exotic_beauty",
+  "cold_prince",
+  "warm_sunshine",
+  "gentle_scholar",
+  "mature_elite",
+  "bad_boy",
+  "artistic_soul",
+  "sporty_fresh",
+  "korean_idol",
+  "japanese_soft",
+  "tough_guy",
+  "retro_hong_kong",
+  "mysterious_wolf",
+  "puppy_boy",
+  "gentleman",
+  "mixed_exotic",
+  "neighbor_brother",
 ];
 
 const SUB_ITEM_SCHEMA = {
-  type: 'object',
+  type: "object",
   properties: {
-    score: { type: 'integer', minimum: 0, maximum: 100 },
-    level: { type: 'string', enum: ['优秀', '良好', '一般', '需改善'] }
+    score: { type: "integer", minimum: 0, maximum: 100 },
+    level: { type: "string", enum: ["优秀", "良好", "一般", "需改善"] },
   },
-  required: ['score', 'level']
+  required: ["score", "level"],
 };
 
 const METRIC_DETAIL_SCHEMA = (subItemNames) => ({
-  type: 'object',
+  type: "object",
   properties: {
-    score: { type: 'integer', minimum: 0, maximum: 100 },
-    percentile: { type: 'integer', minimum: 0, maximum: 100 },
+    score: { type: "integer", minimum: 0, maximum: 100 },
+    percentile: { type: "integer", minimum: 0, maximum: 100 },
     sub_items: {
-      type: 'object',
-      properties: Object.fromEntries(subItemNames.map(name => [name, SUB_ITEM_SCHEMA])),
-      required: subItemNames
+      type: "object",
+      properties: Object.fromEntries(
+        subItemNames.map((name) => [name, SUB_ITEM_SCHEMA]),
+      ),
+      required: subItemNames,
     },
-    diagnosis: { type: 'string' },
-    suggestion: { type: 'string' }
+    diagnosis: { type: "string" },
+    suggestion: { type: "string" },
   },
-  required: ['score', 'percentile', 'sub_items', 'diagnosis', 'suggestion']
+  required: ["score", "percentile", "sub_items", "diagnosis", "suggestion"],
 });
 
 const RESPONSE_SCHEMA = {
-  type: 'object',
+  type: "object",
   properties: {
-    gender: { type: 'string', enum: ['female', 'male'] },
-    aura_type: { type: 'string', enum: ALL_AURA_TYPES },
-    predicted_age: { type: 'integer', minimum: 15, maximum: 60 },
-    beauty_score: { type: 'integer', minimum: 0, maximum: 100 },
-    tagline: { type: 'string' },
+    gender: { type: "string", enum: ["female", "male"] },
+    aura_type: { type: "string", enum: ALL_AURA_TYPES },
+    predicted_age: { type: "integer", minimum: 15, maximum: 60 },
+    beauty_score: { type: "integer", minimum: 0, maximum: 100 },
+    tagline: { type: "string" },
     radar: {
-      type: 'object',
+      type: "object",
       properties: {
         youthfulness: {
-          type: 'object',
-          properties: { score: { type: 'integer', minimum: 0, maximum: 100 }, insight: { type: 'string' } },
-          required: ['score', 'insight']
+          type: "object",
+          properties: {
+            score: { type: "integer", minimum: 0, maximum: 100 },
+            insight: { type: "string" },
+          },
+          required: ["score", "insight"],
         },
         elegance: {
-          type: 'object',
-          properties: { score: { type: 'integer', minimum: 0, maximum: 100 }, insight: { type: 'string' } },
-          required: ['score', 'insight']
+          type: "object",
+          properties: {
+            score: { type: "integer", minimum: 0, maximum: 100 },
+            insight: { type: "string" },
+          },
+          required: ["score", "insight"],
         },
         vibe: {
-          type: 'object',
-          properties: { score: { type: 'integer', minimum: 0, maximum: 100 }, insight: { type: 'string' } },
-          required: ['score', 'insight']
+          type: "object",
+          properties: {
+            score: { type: "integer", minimum: 0, maximum: 100 },
+            insight: { type: "string" },
+          },
+          required: ["score", "insight"],
         },
         affinity: {
-          type: 'object',
-          properties: { score: { type: 'integer', minimum: 0, maximum: 100 }, insight: { type: 'string' } },
-          required: ['score', 'insight']
+          type: "object",
+          properties: {
+            score: { type: "integer", minimum: 0, maximum: 100 },
+            insight: { type: "string" },
+          },
+          required: ["score", "insight"],
         },
         uniqueness: {
-          type: 'object',
-          properties: { score: { type: 'integer', minimum: 0, maximum: 100 }, insight: { type: 'string' } },
-          required: ['score', 'insight']
-        }
+          type: "object",
+          properties: {
+            score: { type: "integer", minimum: 0, maximum: 100 },
+            insight: { type: "string" },
+          },
+          required: ["score", "insight"],
+        },
       },
-      required: ['youthfulness', 'elegance', 'vibe', 'affinity', 'uniqueness']
+      required: ["youthfulness", "elegance", "vibe", "affinity", "uniqueness"],
     },
     radar_detail: {
-      type: 'object',
+      type: "object",
       properties: {
-        youthfulness: METRIC_DETAIL_SCHEMA(['collagen', 'apple_cheeks', 'plumpness', 'skin_texture']),
-        elegance: METRIC_DETAIL_SCHEMA(['bone_structure', 'contour', 'proportions', 'refinement']),
-        vibe: METRIC_DETAIL_SCHEMA(['eye_expression', 'demeanor', 'aura', 'charisma'])
+        youthfulness: METRIC_DETAIL_SCHEMA([
+          "collagen",
+          "apple_cheeks",
+          "plumpness",
+          "skin_texture",
+        ]),
+        elegance: METRIC_DETAIL_SCHEMA([
+          "bone_structure",
+          "contour",
+          "proportions",
+          "refinement",
+        ]),
+        vibe: METRIC_DETAIL_SCHEMA([
+          "eye_expression",
+          "demeanor",
+          "aura",
+          "charisma",
+        ]),
       },
-      required: ['youthfulness', 'elegance', 'vibe']
+      required: ["youthfulness", "elegance", "vibe"],
     },
     metrics_detail: {
-      type: 'object',
+      type: "object",
       properties: {
-        skin_quality: METRIC_DETAIL_SCHEMA(['luminosity', 'smoothness', 'evenness', 'pores']),
-        anti_aging: METRIC_DETAIL_SCHEMA(['nasolabial', 'eye_area', 'firmness', 'elasticity']),
-        vitality: METRIC_DETAIL_SCHEMA(['complexion', 'dark_circles', 'fatigue', 'hydration'])
+        skin_quality: METRIC_DETAIL_SCHEMA([
+          "luminosity",
+          "smoothness",
+          "evenness",
+          "pores",
+        ]),
+        anti_aging: METRIC_DETAIL_SCHEMA([
+          "nasolabial",
+          "eye_area",
+          "firmness",
+          "elasticity",
+        ]),
+        vitality: METRIC_DETAIL_SCHEMA([
+          "complexion",
+          "dark_circles",
+          "fatigue",
+          "hydration",
+        ]),
       },
-      required: ['skin_quality', 'anti_aging', 'vitality']
+      required: ["skin_quality", "anti_aging", "vitality"],
     },
-    concerns: { type: 'array', items: { type: 'string' }, maxItems: 3 }
+    concerns: { type: "array", items: { type: "string" }, maxItems: 3 },
   },
-  required: ['gender', 'aura_type', 'predicted_age', 'beauty_score', 'tagline', 'radar', 'radar_detail', 'metrics_detail', 'concerns']
+  required: [
+    "gender",
+    "aura_type",
+    "predicted_age",
+    "beauty_score",
+    "tagline",
+    "radar",
+    "radar_detail",
+    "metrics_detail",
+    "concerns",
+  ],
 };
 
 const ANALYSIS_PROMPT = `你是一个专业的颜值气质分析师，为用户提供有趣的面部分析。
@@ -270,65 +352,65 @@ const ANALYSIS_PROMPT = `你是一个专业的颜值气质分析师，为用户�
 请严格按照JSON格式返回结果。`;
 
 export const config = {
-  runtime: 'edge',
+  runtime: "edge",
 };
 
 export default async function handler(req) {
-  if (req.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+  if (req.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Method not allowed" }), {
       status: 405,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { "Content-Type": "application/json" },
     });
   }
 
   try {
     const formData = await req.formData();
-    const imageFile = formData.get('image');
-    
+    const imageFile = formData.get("image");
+
     if (!imageFile) {
-      return new Response(JSON.stringify({ error: 'No image provided' }), {
+      return new Response(JSON.stringify({ error: "No image provided" }), {
         status: 400,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { "Content-Type": "application/json" },
       });
     }
 
     const apiKey = process.env.GEMINI_API_KEY;
     const baseUrl = process.env.GEMINI_BASE_URL || DEFAULT_BASE_URL;
-    const modelName = process.env.GEMINI_MODEL || 'gemini-2.5-flash-lite';
+    const modelName = process.env.GEMINI_MODEL || "gemini-2.5-flash-lite";
 
     if (!apiKey) {
-      return new Response(JSON.stringify({ error: 'API key not configured' }), {
+      return new Response(JSON.stringify({ error: "API key not configured" }), {
         status: 500,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { "Content-Type": "application/json" },
       });
     }
 
     const arrayBuffer = await imageFile.arrayBuffer();
-    const base64 = Buffer.from(arrayBuffer).toString('base64');
+    const base64 = Buffer.from(arrayBuffer).toString("base64");
     const mimeType = imageFile.type;
 
-    const clientOptions = {};
-    if (baseUrl && baseUrl !== DEFAULT_BASE_URL) {
-      clientOptions.baseUrl = baseUrl;
-    }
-
-    const client = new GoogleGenerativeAI(apiKey, clientOptions);
-    const model = client.getGenerativeModel({
-      model: modelName,
-      generationConfig: {
-        responseMimeType: 'application/json',
-        responseSchema: RESPONSE_SCHEMA
-      }
+    const ai = new GoogleGenAI({
+      apiKey,
+      ...(baseUrl && baseUrl !== DEFAULT_BASE_URL
+        ? { httpOptions: { baseUrl } }
+        : {}),
     });
 
-    const result = await model.generateContent([
-      ANALYSIS_PROMPT,
-      { inlineData: { data: base64, mimeType } }
-    ]);
+    const response = await ai.models.generateContent({
+      model: modelName,
+      contents: [
+        { text: ANALYSIS_PROMPT },
+        { inlineData: { mimeType, data: base64 } },
+      ],
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: RESPONSE_SCHEMA,
+      },
+    });
 
-    const text = result.response.text();
+    const text = response.text;
     let parsed;
-    
+
     try {
       parsed = JSON.parse(text);
     } catch {
@@ -336,21 +418,21 @@ export default async function handler(req) {
       if (match) {
         parsed = JSON.parse(match[1]);
       } else {
-        throw new Error('Failed to parse response');
+        throw new Error("Failed to parse response");
       }
     }
 
     return new Response(JSON.stringify(parsed), {
       status: 200,
       headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      }
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
     });
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { "Content-Type": "application/json" },
     });
   }
 }
