@@ -17,7 +17,7 @@ export async function analyzeFaceServer(imageFile) {
   const formData = new FormData();
   formData.append("image", imageFile);
 
-  const response = await fetch("/api/analyze", {
+  const response = await fetch("https://www.7yaz1.cn/api/analyze", {
     method: "POST",
     body: formData,
   });
