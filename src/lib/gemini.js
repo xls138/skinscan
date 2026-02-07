@@ -102,7 +102,7 @@ const ANALYSIS_PROMPT = `你是一个专业的颜值气质分析师，为用户�
    - neighbor_brother: 邻家系·国民老公（亲切、靠谱、安全感）
    - mixed_exotic: 混血系·异域王子（立体、深邃、异国感）
 
-2. **预测年龄 (predicted_age)**: 根据面部特征预测年龄，范围15-60岁
+2. **预测年龄 (predicted_age)**: 根据面部特征预测年龄，范围5-60岁
    - 适当往年轻方向偏（用户会更开心）
 
 3. **颜值评分 (beauty_score)**: 0-100分

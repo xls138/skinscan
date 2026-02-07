@@ -383,7 +383,7 @@ export const SkinScanSchema = z.object({
     .enum(AURA_TYPE_KEYS)
     .describe("气质类型分类，根据性别从对应16种类型中选择"),
 
-  predicted_age: z.number().min(15).max(60).describe("AI预测年龄"),
+  predicted_age: z.number().min(5).max(60).describe("AI预测年龄"),
 
   beauty_score: z.number().min(0).max(100).describe("颜值评分 0-100"),
 
